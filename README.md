@@ -1,5 +1,7 @@
 # Image Scraping + Render Capture Tools
 
+[![Smoke Test](https://github.com/kaiser-factorial/image-scraper-tools/actions/workflows/smoke-test.yml/badge.svg)](https://github.com/kaiser-factorial/image-scraper-tools/actions/workflows/smoke-test.yml)
+
 Small CLI toolkit for collecting images from websites, including:
 
 - standard image URL scraping from HTML/JS
