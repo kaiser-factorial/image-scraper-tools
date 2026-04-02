@@ -47,3 +47,11 @@ Capture rendered page screenshot:
 
 - `capture_rendered_page.py` requires Playwright + Chromium.
 - If your Python is system-managed (PEP 668), use a virtual environment (`.venv`) for installs.
+
+## Known Limitations
+
+- Auth-gated/personalized pages (for example social feeds after login) may only expose public/static assets unless run in an authenticated browser context.
+- Very JS-heavy pages can produce many candidate URLs; `--verify-urls` improves accuracy but may run slower.
+- `--include-js` can surface image-like strings from third-party bundles that are not actually used by the target page. Use `--verify-urls` and/or domain filters to reduce noise.
+- Some app-rendered visuals (canvas/WebGL) are not downloadable image files. Use `capture_rendered_page.py` for screenshot-based capture in those cases.
+- Some sites only expose transformed/resized derivatives, not original full-resolution source files.
