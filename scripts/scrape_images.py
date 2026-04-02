@@ -16,10 +16,12 @@ from __future__ import annotations
 import argparse
 import base64
 import csv
+import gzip
 import hashlib
 import html
 import re
 import sys
+import zlib
 from collections import deque
 from html.parser import HTMLParser
 from pathlib import Path
@@ -160,7 +162,7 @@ class LinkImageParser(HTMLParser):
 
 
 def fetch_text(url: str, timeout: float, user_agent: str) -> tuple[str, str] | None:
-    request = Request(url, headers={"User-Agent": user_agent})
+    request = Request(url, headers={"User-Agent": user_agent, "Accept-Encoding": "identity"})
     try:
         with urlopen(request, timeout=timeout) as response:
             content_type = response.headers.get("Content-Type", "").split(";")[0].strip().lower()
@@ -169,6 +171,16 @@ def fetch_text(url: str, timeout: float, user_agent: str) -> tuple[str, str] | N
             raw = response.read()
     except Exception:
         return None
+
+    # Some servers still return compressed payloads without transparent decoding.
+    # Detect by magic/header and decompress when possible.
+    try:
+        if raw.startswith(b"\x1f\x8b"):
+            raw = gzip.decompress(raw)
+        elif raw.startswith(b"\x78\x9c") or raw.startswith(b"\x78\x01") or raw.startswith(b"\x78\xda"):
+            raw = zlib.decompress(raw)
+    except Exception:
+        pass
 
     # best effort decode
     for enc in ("utf-8", "latin-1"):
@@ -180,7 +192,7 @@ def fetch_text(url: str, timeout: float, user_agent: str) -> tuple[str, str] | N
 
 
 def fetch_head_or_get(url: str, timeout: float, user_agent: str) -> tuple[int, str] | None:
-    headers = {"User-Agent": user_agent}
+    headers = {"User-Agent": user_agent, "Accept-Encoding": "identity"}
     for method in ("HEAD", "GET"):
         request = Request(url, headers=headers, method=method)
         try:
@@ -272,7 +284,7 @@ def unique_path(dest_dir: Path, filename: str, url: str) -> Path:
 
 
 def download_binary(url: str, out_path: Path, timeout: float, user_agent: str) -> bool:
-    request = Request(url, headers={"User-Agent": user_agent})
+    request = Request(url, headers={"User-Agent": user_agent, "Accept-Encoding": "identity"})
     try:
         with urlopen(request, timeout=timeout) as response:
             data = response.read()
