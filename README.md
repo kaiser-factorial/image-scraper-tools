@@ -38,6 +38,12 @@ Capture rendered page screenshot:
   --wait-ms 2500
 ```
 
+Run quick smoke test:
+
+```bash
+bash scripts/smoke_test.sh
+```
+
 ## Docs
 
 - Detailed scraper guide: [docs/IMAGE_SCRAPER.md](docs/IMAGE_SCRAPER.md)
