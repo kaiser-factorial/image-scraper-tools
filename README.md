@@ -63,3 +63,22 @@ bash scripts/smoke_test.sh
 - `--include-js` can surface image-like strings from third-party bundles that are not actually used by the target page. Use `--verify-urls` and/or domain filters to reduce noise.
 - Some app-rendered visuals (canvas/WebGL) are not downloadable image files. Use `capture_rendered_page.py` for screenshot-based capture in those cases.
 - Some sites only expose transformed/resized derivatives, not original full-resolution source files.
+
+## Troubleshooting
+
+- `error: externally-managed-environment` during pip install  
+  Use a virtual environment:
+  `python3 -m venv .venv && .venv/bin/python -m pip install playwright`
+
+- `Playwright is required` or Chromium executable missing  
+  Install both package and browser:
+  `python -m pip install playwright && python -m playwright install chromium`
+
+- Scraper returns too many irrelevant URLs  
+  Add `--verify-urls`, and optionally constrain hosts with `--include-domain` or `--exclude-domain`.
+
+- Scraper returns 0 URLs on app-like pages  
+  Try `scripts/capture_rendered_page.py` instead; the page may be canvas/WebGL-rendered with no direct image files.
+
+- `--verify-urls` feels slow  
+  Run once without verification for discovery speed, then re-run with `--verify-urls` (or domain filters) for cleanup.
