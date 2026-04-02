@@ -2,3 +2,12 @@
 .venv/
 __pycache__/
 *.pyc
+
+# Generated scraper/capture outputs
+*_urls.txt
+*_manifest.csv
+*-download-failures.txt
+old_*.html
+old_*_script*.js
+old_*_image_urls.txt
+portfolio-site-images/
